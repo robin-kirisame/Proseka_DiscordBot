@@ -3,12 +3,21 @@
  */
 package org.robin.proseka.discordbot;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        InputStream is = App.class.getClassLoader().getResourceAsStream("bot_token.txt");
+        if (is != null) {
+            try {
+                JDA api = JDABuilder.createDefault(new String(is.readAllBytes(), StandardCharsets.UTF_8)).build();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

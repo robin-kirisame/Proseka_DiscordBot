@@ -6,3 +6,6 @@ build
 
 # Ignore Kotlin plugin data
 .kotlin
+
+# !!DO NOT COMMIT BOT TOKEN TO GITHUB!!
+app/src/main/resources/bot_token.txt
