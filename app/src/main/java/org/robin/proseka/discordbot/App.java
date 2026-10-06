@@ -14,7 +14,10 @@ public class App {
         InputStream is = App.class.getClassLoader().getResourceAsStream("bot_token.txt");
         if (is != null) {
             try {
-                JDA api = JDABuilder.createDefault(new String(is.readAllBytes(), StandardCharsets.UTF_8)).build();
+                // 空白が入っているとエラーになるので削除
+                String token = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+                JDA api = JDABuilder.createDefault(token).build();
+                api.addEventListener(new HonamiListner());
             } catch (IOException e) {
                 e.printStackTrace();
             }
