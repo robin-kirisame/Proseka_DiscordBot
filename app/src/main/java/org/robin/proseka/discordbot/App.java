@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class App {
     public static void main(String[] args) {
@@ -16,7 +17,7 @@ public class App {
             try {
                 // 空白が入っているとエラーになるので削除
                 String token = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
-                JDA api = JDABuilder.createDefault(token).build();
+                JDA api = JDABuilder.createDefault(token, GatewayIntent.MESSAGE_CONTENT).build();
                 api.addEventListener(new HonamiListner());
             } catch (IOException e) {
                 e.printStackTrace();
