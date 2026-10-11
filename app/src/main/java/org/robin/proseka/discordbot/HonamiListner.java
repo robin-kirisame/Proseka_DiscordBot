@@ -1,6 +1,12 @@
 package org.robin.proseka.discordbot;
 
+import java.util.List;
+
+import com.google.common.hash.HashingOutputStream;
+
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -10,6 +16,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class HonamiListner extends ListenerAdapter 
 {
+    private JDA api = null;
+
+    public HonamiListner(JDA api)
+    {
+        this.api = api;
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
@@ -19,7 +32,7 @@ public class HonamiListner extends ListenerAdapter
         String content = message.getContentRaw();
         // getContentRaw() is an atomic getter
         // getContentDisplay() is a lazy getter which modifies the content for e.g. console view (strip discord formatting)
-        if (content.equals("こんにちは"))
+        if (isMentioned(message.getMentions().getUsers()) && content.contains("こんにちは"))
         {
             MessageChannelUnion channel = event.getChannel();
             channel.sendMessage("こんにちは！" + event.getAuthor().getAsMention() + " さん！").queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
@@ -36,5 +49,10 @@ public class HonamiListner extends ListenerAdapter
             channel.sendMessage(message).queue(); // メッセージを送信 (非同期処理なのでqueueを呼ぶ必要あり)
         else
             System.out.println("[ProsekaDiscordBot] System Channel is null");
+    }
+
+    private boolean isMentioned(List<User> users) 
+    {
+        return users.contains(api.getSelfUser());
     }
 }
