@@ -18,7 +18,7 @@ public class App {
                 // 空白が入っているとエラーになるので削除
                 String token = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
                 JDA api = JDABuilder.createDefault(token).enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
-                api.addEventListener(new HonamiListner());
+                api.addEventListener(new HonamiListner(api));
             } catch (IOException e) {
                 e.printStackTrace();
             }
