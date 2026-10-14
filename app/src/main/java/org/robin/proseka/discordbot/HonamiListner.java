@@ -123,6 +123,5 @@ public class HonamiListner extends ListenerAdapter
     private boolean isMentioned(List<User> users) 
     {
         return users.contains(api.getSelfUser());
-    }
-    
+    } 
 }
