@@ -60,7 +60,7 @@ public class HonamiListner extends ListenerAdapter
             {
                 //1回未満の回数でダイスロールをしようとしたときに出力されるエラーメッセージ。
                 event.getChannel().sendMessage(
-                    event.getAuthor().getAsMention()+"さん。1回はサイコロ振らないとできないんだ…"
+                    event.getAuthor().getAsMention()+"さん。1回はサイコロ振らないといけないんだ…"
                     ).queue();
                 return;
             }
@@ -76,7 +76,7 @@ public class HonamiListner extends ListenerAdapter
             {
                 //面数が1未満でダイスロールをしようとしたときに出力されるエラーメッセージ。
                 event.getChannel().sendMessage(
-                   event.getAuthor().getAsMention()+ "さん。1より小さい面数はできないんだ…"
+                   event.getAuthor().getAsMention()+ "さん。1より小さい面数は振り出せないんだ…"
                 ).queue();
                 return;
             }
