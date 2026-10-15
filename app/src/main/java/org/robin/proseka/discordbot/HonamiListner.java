@@ -34,13 +34,13 @@ public class HonamiListner extends ListenerAdapter
         // We don't want to respond to other bot accounts, including ourself
         Message message = event.getMessage();
         String content = message.getContentRaw();
-        Matcher dice = DICE_PATTERN.matcher(content.trim());
-        if (dice.matches())
+        Matcher dice = DICE_PATTERN.matcher(content.replaceAll("<@!?" + api.getSelfUser().getId() + ">", "").trim());
+        if (message.getMentions().isMentioned(api.getSelfUser()) && dice.matches())
         {
             //振り出すサイコロの個数
-            int count;
+            int count = 0;
             //サイコロの面数
-            int sides;
+            int sides = 0 ;
             try
             {
                 //振り出すサイコロの個数をダイスグループ1と定義
@@ -51,25 +51,33 @@ public class HonamiListner extends ListenerAdapter
             catch (NumberFormatException e)
             {
                 //面数がint型の最大値より大きいか、下記3つ以外のダイスロールエラーの時に出力されるエラーメッセージ。
-                event.getChannel().sendMessage("ごめんね、その条件でサイコロ振れないみたい…").queue();
+                event.getChannel().sendMessage(
+                    event.getAuthor().getAsMention()+"さん。ごめんね、その条件でサイコロ振れないみたい…"
+                ).queue();
                 return;
             }
             if (count < 1)
             {
                 //1回未満の回数でダイスロールをしようとしたときに出力されるエラーメッセージ。
-                event.getChannel().sendMessage("1回はサイコロ振らないとできないんだ…").queue();
+                event.getChannel().sendMessage(
+                    event.getAuthor().getAsMention()+"さん。1回はサイコロ振らないとできないんだ…"
+                    ).queue();
                 return;
             }
             if (count > 100)
             {
                 //100回より多くの回数でダイスロールをしようとしたときに出力されるエラーメッセージ
-                event.getChannel().sendMessage("100個より多くはサイコロ振れないんだ…").queue();
+                event.getChannel().sendMessage(
+                    event.getAuthor().getAsMention()+"さん。100個より多くはサイコロ振れないんだ…"
+                ).queue();
                 return;
             }
             if (sides < 1)
             {
                 //面数が1未満でダイスロールをしようとしたときに出力されるエラーメッセージ。
-                event.getChannel().sendMessage("1より小さい面数はできないんだ…").queue();
+                event.getChannel().sendMessage(
+                   event.getAuthor().getAsMention()+ "さん。1より小さい面数はできないんだ…"
+                ).queue();
                 return;
             }
 
@@ -88,7 +96,9 @@ public class HonamiListner extends ListenerAdapter
                 total += roll;
             }
             result.append("] 合計: ").append(total);
-            event.getChannel().sendMessage(result.toString()).queue();
+            event.getChannel().sendMessage(
+                event.getAuthor().getAsMention() +" さん。"+ " " +result.toString()
+            ).queue();
             return;
         }
         // getContentRaw() is an atomic getter
@@ -99,12 +109,12 @@ public class HonamiListner extends ListenerAdapter
             channel.sendMessage("こんにちは！" + event.getAuthor().getAsMention() + " さん！").queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
         }
         //「わんわん」がテキストに含まれるなら
-        if (content.contains("わんわん"))
+        if (content.contains("わんわん～"))
         {
             //対象のチャンネルに対してイベントを起こす。
             MessageChannelUnion channel = event.getChannel();
             //「わんだほい！！」のテキストメッセージを返す。
-            channel.sendMessage("わんだほい！！").queue(); // メッセージを送信 (非同期処理なのでqueueを呼ぶ必要あり)
+            channel.sendMessage("わんだほ～い！！").queue(); // メッセージを送信 (非同期処理なのでqueueを呼ぶ必要あり)
         }
     }
 
