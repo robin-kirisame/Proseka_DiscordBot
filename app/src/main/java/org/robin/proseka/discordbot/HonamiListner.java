@@ -1,5 +1,8 @@
 package org.robin.proseka.discordbot;
 
+import java.security.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
@@ -116,6 +119,131 @@ public class HonamiListner extends ListenerAdapter
             //「わんだほい！！」のテキストメッセージを返す。
             channel.sendMessage("わんだほ～い！！").queue(); // メッセージを送信 (非同期処理なのでqueueを呼ぶ必要あり)
         }
+
+        //おやつダイス「今日のおやつは？」とメンションで聞かれたときに返す。
+        if (message.getMentions().isMentioned(api.getSelfUser()) && content.contains("今日のおやつは？"))
+         {
+            //現在時刻を取得する
+            int hour = message.getTimeCreated()
+                //日本時間で設定
+                .atZoneSameInstant(ZoneId.of("Asia/Tokyo"))
+                .getHour();
+
+            String response;
+
+            //true の時に処理を行う。
+            boolean diceroll = true;
+            
+            //午前5時~午前11時59分までの間
+            if (hour >=5 && hour < 12)
+            {
+                //「早い時間だけど、ちょっとならいいよね。」と返す。
+                response = "早い時間だけど、ちょっとならいいよね。";
+
+                //true で返す。
+                diceroll = true;
+            }
+
+            //午後0時~午後3時59分までの間
+            else if (hour >=12 && hour < 16)
+            {
+                //「何を食べようかな…？」と返す
+                response = "何を食べようかな…？";
+
+                //true で返す。
+                diceroll = true;
+            }
+
+            //午後4時~午後10時59分までの間
+            else if (hour >=16 && hour < 23)
+            {
+                //「晩御飯もあるから、少しだけだよ。」と返す
+                response = "晩御飯もあるから、少しだけだよ。";
+
+                //true で返す。
+                diceroll = true;
+            }
+            else
+            {
+                //「今から食べるのはよくないんじゃないかな？」と返す
+                response = "今から食べるのはよくないんじゃないかな？" ;
+
+                //false で返す。
+                diceroll = false;
+
+                //falseの時にはメッセージを取得したチャンネルで
+                event.getChannel().sendMessage(
+                    //メンションをつけて
+                    event.getAuthor().getAsMention() 
+                    //「今から食べるのはよくないんじゃないかな？」を返す。
+                    + response).queue();
+            }
+ 
+            //dicerollがtrueの時
+            if (diceroll)
+             {
+                //long型で1~20のダイスロールを行う。
+                long roll = ThreadLocalRandom.current().nextLong(1,21);
+
+                //ダイスロールの出目が15以下の時は
+                String responsed ;
+                if (roll <= 15)
+                {
+                    //「アップルパイ」と返す。
+                    responsed = "アップルパイ";
+                }
+
+                //ダイスロールの出目が16の時は
+                else if (roll == 16)
+                {
+                    //「チョコレート」と返す。
+                    responsed = "チョコレート";
+                }
+
+                //ダイスロールの出目が17の時は
+                else if (roll == 17)
+                {
+                    //「ポテトチップス」と返す。
+                    responsed = "ポテトチップス";
+                }
+
+                //ダイスロールの出目が18の時は
+                else if (roll == 18)
+                {
+                    //「ショートケーキ」と返す。
+                    responsed = "ショートケーキ";
+                }
+
+                //ダイスロールの出目が19の時は
+                else if (roll == 19)
+                {
+                    //「シュークリーム」と返す。
+                    responsed = "シュークリーム";
+                }
+
+                //ダイスロールの出目が20の時は
+                else 
+                {
+                    //「プリン」と返す。
+                    responsed = "プリン";
+                }
+
+                //ダイスロールで取得した結果をメッセージを取得したチャンネルで
+                event.getChannel().sendMessage(
+
+                    //メンションをつけて
+                    event.getAuthor().getAsMention() 
+
+                    //diceroll = true　の時のメッセージと
+                    + response
+
+                    //ダイスロールの出目の結果を返す。
+                    + "今日は" + responsed + "がいいんじゃないかな？"
+                ).queue();
+                return;
+            }
+        }
+
     }
 
     @Override
