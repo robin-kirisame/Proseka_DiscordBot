@@ -3,25 +3,28 @@
  */
 package org.robin.proseka.discordbot;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.io.IOException;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class App {
-    public static void main(String[] args) {
-        InputStream is = App.class.getClassLoader().getResourceAsStream("bot_token.txt");
-        if (is != null) {
-            try {
-                // 空白が入っているとエラーになるので削除
-                String token = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
-                JDA api = JDABuilder.createDefault(token).enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
-                api.addEventListener(new HonamiListner(api));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+  public static void main(String[] args) {
+    InputStream is = App.class.getClassLoader().getResourceAsStream("bot_token.txt");
+    if (is != null) {
+      try {
+        // 空白が入っているとエラーになるので削除
+        String token = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+        JDA api =
+            JDABuilder.createDefault(token)
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+                .build();
+        api.addEventListener(new HonamiListner(api));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+  }
 }

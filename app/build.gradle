@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    id 'com.diffplug.spotless' version '8.2.1'
 }
 
 repositories {
@@ -36,6 +37,12 @@ java {
 application {
     // Define the main class for the application.
     mainClass = 'org.robin.proseka.discordbot.App'
+}
+
+spotless {
+    java {
+        googleJavaFormat('1.36.1')
+    }
 }
 
 tasks.named('test') {
