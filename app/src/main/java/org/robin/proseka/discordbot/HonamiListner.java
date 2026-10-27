@@ -97,11 +97,64 @@ public class HonamiListner extends ListenerAdapter {
     // getContentRaw() is an atomic getter
     // getContentDisplay() is a lazy getter which modifies the content for e.g. console view (strip
     // discord formatting)
-    if (isMentioned(message.getMentions().getUsers()) && content.contains("こんにちは")) {
-      MessageChannelUnion channel = event.getChannel();
-      channel
-          .sendMessage("こんにちは！" + event.getAuthor().getAsMention() + " さん！")
-          .queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
+    if (isMentioned(message.getMentions().getUsers()) && content.contains("おはよう")
+        || content.contains("こんにちは")
+        || content.contains("こんばんわ")) {
+      // 現在時刻を取得する
+      int hours =
+          message
+              .getTimeCreated()
+              // 日本時間で設定
+              .atZoneSameInstant(ZoneId.of("Asia/Tokyo"))
+              .getHour();
+
+      String response_hello;
+
+      boolean hello = true;
+
+      if (hours >= 5 && hours < 11) {
+        // 「おはよう！」と返す。
+        response_hello = "おはよう！";
+
+        // helloにtrue で返す。
+        hello = true;
+      } else if (hours >= 11 && hours < 16) {
+        // 「こんにちは！」と返す。
+        response_hello = "こんにちは！";
+
+        // helloにtrue で返す。
+        hello = true;
+      } else if (hours >= 16 && hours < 23) {
+        // 「こんばんわ！」と返す。
+        response_hello = "こんばんわ！";
+
+        // helloにtrue で返す。
+        hello = true;
+      } else {
+        // 「今から食べるのはよくないんじゃないかな？」と返す
+        response_hello = "えっと…寝たほうがいいんじゃないかな？";
+
+        // false で返す。
+        hello = false;
+
+        // falseの時にはメッセージを取得したチャンネルで
+        event
+            .getChannel()
+            .sendMessage(
+                // メンションをつけて
+                event.getAuthor().getAsMention()
+                    + " さん！"
+                    // 「えっと…寝たほうがいいんじゃないかな？」を返す。
+                    + response_hello)
+            .queue();
+      }
+      // helloがtrueの時
+      if (hello) {
+        MessageChannelUnion channel = event.getChannel();
+        channel
+            .sendMessage(response_hello + event.getAuthor().getAsMention() + " さん！")
+            .queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
+      }
     }
     // 「わんわん」がテキストに含まれるなら
     if (content.contains("わんわん～")) {
@@ -218,6 +271,7 @@ public class HonamiListner extends ListenerAdapter {
 
                 // メンションをつけて
                 event.getAuthor().getAsMention()
+                    + " さん！"
 
                     // diceroll = true　の時のメッセージと
                     + response
