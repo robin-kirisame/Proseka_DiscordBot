@@ -43,7 +43,7 @@ public class HonamiListner extends ListenerAdapter {
         response = event.getAuthor().getAsMention() + " さん。お祝いありがとう！これからもよろしくね";
       } else {
         // 誕生日当日以外の場合の返答
-        response = event.getAuthor().getAsMention() + " さん。ありがとう！でも、私の誕生日は10月27日なんだ…";
+        response = event.getAuthor().getAsMention() + " さん。えっと、私の誕生日は10月27日なんだ…その時はよろしくね";
       }
       event.getChannel().sendMessage(response).queue();
       return;
