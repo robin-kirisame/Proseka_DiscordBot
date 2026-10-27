@@ -28,6 +28,27 @@ public class HonamiListner extends ListenerAdapter {
     // We don't want to respond to other bot accounts, including ourself
     Message message = event.getMessage();
     String content = message.getContentRaw();
+
+    if (message.getMentions().isMentioned(api.getSelfUser()) && content.contains("誕生日おめでとう")) {
+      var date =
+          message
+              .getTimeCreated()
+              // 日本時間で設定
+              .atZoneSameInstant(ZoneId.of("Asia/Tokyo"));
+      int month = date.getMonthValue();
+      int day = date.getDayOfMonth();
+      String response;
+      if (month == 10 && day == 27) {
+        // 誕生日当日の場合の返答
+        response = event.getAuthor().getAsMention() + " さん。お祝いありがとう！これからもよろしくね";
+      } else {
+        // 誕生日当日以外の場合の返答
+        response = event.getAuthor().getAsMention() + " さん。ありがとう！でも、私の誕生日は10月27日なんだ…";
+      }
+      event.getChannel().sendMessage(response).queue();
+      return;
+    }
+
     Matcher dice =
         DICE_PATTERN.matcher(
             content.replaceAll("<@!?" + api.getSelfUser().getId() + ">", "").trim());
