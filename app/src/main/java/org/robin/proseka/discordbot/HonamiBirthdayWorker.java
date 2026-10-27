@@ -28,6 +28,7 @@ public class HonamiBirthdayWorker {
         Thread.sleep(1000 * 60); // 1分ごとに実行
       } catch (InterruptedException e) {
         e.printStackTrace();
+        break; // スレッドが中断された場合はループを抜ける
       }
     }
   }
