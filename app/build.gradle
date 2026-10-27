@@ -40,6 +40,8 @@ application {
 }
 
 spotless {
+    lineEndings 'WINDOWS'
+
     java {
         googleJavaFormat('1.36.1')
     }
