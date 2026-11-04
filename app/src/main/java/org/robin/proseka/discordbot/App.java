@@ -6,6 +6,8 @@ package org.robin.proseka.discordbot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -22,6 +24,13 @@ public class App {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
                 .build();
         api.addEventListener(new HonamiListner(api));
+
+        // 誕生日を祝う処理を別スレッドで実行
+        HonamiBirthdayWorker birthdayWorker = new HonamiBirthdayWorker(api);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(birthdayWorker::run);
+        // 処理が終わったらシャットダウンする
+        executor.shutdown();
       } catch (IOException e) {
         e.printStackTrace();
       }

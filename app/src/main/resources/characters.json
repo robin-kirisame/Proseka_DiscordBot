@@ -1,0 +1,18 @@
+{
+    "characters":[
+        {
+            "name":"望月穂波",
+            "birthMonth":"10",
+            "birthDay":"27",
+            "pronoun":""
+        }
+    ],
+    "virtualSingers":[
+        {
+            "name":"初音ミク",
+            "birthMonth":"8",
+            "birthDay":"31",
+            "pronoun":"ミクちゃん"
+        }
+    ]
+}
