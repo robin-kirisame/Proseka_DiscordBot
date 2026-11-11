@@ -106,9 +106,10 @@ public class HonamiListner extends ListenerAdapter
         }
         // getContentRaw() is an atomic getter
         // getContentDisplay() is a lazy getter which modifies the content for e.g. console view (strip discord formatting)
-        if (isMentioned(message.getMentions().getUsers()) && content.contains("おはよう")
+        //　メンションしつつ「おはよう」「こんにちは」「こんばんわ」のいずれかを含むとき
+        if (isMentioned(message.getMentions().getUsers()) && (content.contains("おはよう")
             ||content.contains("こんにちは")
-            ||content.contains("こんばんわ")
+            ||content.contains("こんばんわ"))
         )
         {
             //現在時刻を取得する
@@ -119,8 +120,10 @@ public class HonamiListner extends ListenerAdapter
 
             String response_hello;
 
+            //true の時に処理を行う。
             boolean hello = true;
 
+            //午前5時~午前10時59分までの間
             if (hours >=5 && hours < 11)
             {
                 //「おはよう！」と返す。
@@ -130,6 +133,7 @@ public class HonamiListner extends ListenerAdapter
                 hello = true;
             }
 
+            //午前11時~午後15時59分までの間
             else if (hours >=11 && hours < 16)
             {
                 //「こんにちは！」と返す。
@@ -139,6 +143,7 @@ public class HonamiListner extends ListenerAdapter
                 hello = true;
             }
 
+             //午後4時~午後10時59分までの間
             else if (hours >=16 && hours < 23)
             {
                 //「こんばんわ！」と返す。
@@ -147,12 +152,14 @@ public class HonamiListner extends ListenerAdapter
                 //helloにtrue で返す。
                 hello = true;
             }
+
+            //それ以外の時間(午後11時~午前4時59分)
             else
             {
-                //「今から食べるのはよくないんじゃないかな？」と返す
+                //「えっと…寝たほうがいいんじゃないかな？」と返す
                 response_hello = "えっと…寝たほうがいいんじゃないかな？" ;
 
-                //false で返す。
+                //通常の挨拶を送信しないよう、helloをfalseにする。
                 hello = false;
 
                  //falseの時にはメッセージを取得したチャンネルで
@@ -165,7 +172,10 @@ public class HonamiListner extends ListenerAdapter
             //helloがtrueの時
             if (hello)
             {
+            //メッセージを取得したチャンネルでイベントを起こす。
             MessageChannelUnion channel = event.getChannel();
+
+            //メッセージを取得したチャンネルで取得したresponse_helloとメンションしたユーザーに返信を行う。
             channel.sendMessage(response_hello + event.getAuthor().getAsMention() + " さん！").queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
             }
         }
