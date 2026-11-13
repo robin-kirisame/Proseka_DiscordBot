@@ -14,9 +14,13 @@ https://docs.gradle.org/current/userguide/installation.html
 
 ### ビルド方法
 ```
-gradle build
+.\gradlew.bat build
 ```
 ### 実行方法  
 ```
-gradle :app:run
+.\gradlew.bat :app:run
+```
+### フォーマット
+```
+.\gradlew.bat spotlessApply
 ```
