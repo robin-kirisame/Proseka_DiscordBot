@@ -6,25 +6,39 @@ package org.robin.proseka.discordbot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.io.IOException;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class App {
-  public static void main(String[] args) {
-    InputStream is = App.class.getClassLoader().getResourceAsStream("bot_token.txt");
-    if (is != null) {
-      try {
-        // 空白が入っているとエラーになるので削除
-        String token = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
-        JDA api =
-            JDABuilder.createDefault(token)
-                .enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
-                .build();
-        api.addEventListener(new HonamiListner(api));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    public static void main(String[] args) {
+        InputStream is = App.class.getClassLoader().getResourceAsStream("bot_token.txt");
+        if (is != null) {
+            try {
+                // 空白が入っているとエラーになるので削除
+                String token = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+                JDA api = JDABuilder.createDefault(token).enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
+                api.addEventListener(new HonamiListner(api));
+
+                api.awaitReady();
+                
+                // 誕生日を祝う処理を別スレッドで実行
+                HonamiBirthdayWorker birthdayWorker = new HonamiBirthdayWorker(api);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.submit(birthdayWorker::run);
+                // 処理が終わったらシャットダウンする
+                executor.shutdown();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        System.err.println("JDA startup interrupted");
+                }
+        }
     }
-  }
 }
