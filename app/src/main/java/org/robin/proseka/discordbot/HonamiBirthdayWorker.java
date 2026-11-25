@@ -2,6 +2,8 @@ package org.robin.proseka.discordbot;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,53 +37,57 @@ public class HonamiBirthdayWorker {
   }
 
   public void run() {
-    int prevDay = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Tokyo")).getDayOfMonth();
+  ZoneId zone = ZoneId.of("Asia/Tokyo");
+  LocalDate prevDay = LocalDate.now(zone);
     while (true) {
       try {
-        var date = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Tokyo"));
-          int month = date.getMonthValue();
-          int day = date.getDayOfMonth();
-          // 穂波の誕生日祝い
-          if (prevDay != day && month == myBirthMonth && day == myBirthday) {
-            var channel = api.getTextChannelById(BIRTHDAY_CHANNEL_ID);
-            if (channel != null) {
-              channel.sendMessage("今日は私の誕生日だね！その...お祝いとかしてくれると、嬉しいな").queue();
-            }
+        LocalDate date = LocalDate.now(zone);
+        if(!date.equals(prevDay)){
+        int month = date.getMonthValue();
+        int day = date.getDayOfMonth();
+        var channel = api.getTextChannelById(BIRTHDAY_CHANNEL_ID);
+
+          if (channel != null) {
+        // 穂波の誕生日祝い
+        if (month == myBirthMonth && day == myBirthday) {
+          if (channel != null) {
+            channel.sendMessage("今日は私の誕生日だね！その...お祝いとかしてくれると、嬉しいな").queue();
+          }
         }
         // 穂波以外の誕生日祝い
         StringBuilder nameList = new StringBuilder();
-          int matchingCount = 0;
-          for (Profile character : characters) {
-            if (prevDay != day && month == character.birthMonth() && day == character.birthDay()) {
-              if (findMe(character)) continue; // 穂波の場合は上で処理したのでスキップする
-              if (matchingCount > 0) nameList.append("と");
-              nameList.append(character.pronoun());
-              matchingCount++;
+        for (Profile character : characters) {
+          if (!findMe(character)// 穂波の場合は上で処理したのでスキップする
+            && month == character.birthMonth() 
+            && day == character.birthDay()) {
+            if (nameList.length() > 0) nameList.append("と");
+            nameList.append(character.pronoun());
           }
         }
         //バーチャルシンガーの判定
         StringBuilder aniversaryNameList = new StringBuilder();
-          int matchingCountvirtualSingers = 0;
-          for (Profile virtualSingers : virtualSingers) {
-            if (prevDay != day && month == virtualSingers.birthMonth() && day == virtualSingers.birthDay()) {
-              if (matchingCountvirtualSingers > 0) aniversaryNameList.append("と");
-              aniversaryNameList.append(virtualSingers.pronoun());
-              matchingCountvirtualSingers++;
+        for (Profile virtualSingers : virtualSingers) {
+          if (month == virtualSingers.birthMonth() && day == virtualSingers.birthDay()) {
+            if (aniversaryNameList.length() > 0) aniversaryNameList.append("と");
+            aniversaryNameList.append(virtualSingers.pronoun());
              }
           }
-          if (matchingCount > 0) {
-            var channel = api.getTextChannelById(BIRTHDAY_CHANNEL_ID);
-            if (channel != null) {
-              channel.sendMessage("今日は" + nameList.toString() + "の誕生日なんだ！お祝いしてくれると嬉しいな。").queue();
-            }
+        if (aniversaryNameList.length() > 0) {
+        channel.sendMessage("今日は" + aniversaryNameList.toString() + "の記念日なんだ！お祝いしてくれると嬉しいな。").queue();
         }
-          if (matchingCountvirtualSingers > 0) {
-            var channel = api.getTextChannelById(BIRTHDAY_CHANNEL_ID);
-            if (channel != null) {
-              channel.sendMessage("今日は" + aniversaryNameList.toString() + "の記念日なんだ！お祝いしてくれると嬉しいな。").queue();
-            }
+        // キャラクターの名前を追加した後、同じnameListにユーザーも追加する。
+        for (Profile user : users) {
+        if (month == user.birthMonth() && day == user.birthDay()) {
+          if (nameList.length() > 0) nameList.append("と");
+          nameList.append(user.pronoun());
+          }
         }
-        prevDay = day; // 前回の実行日を更新
+        if (nameList.length() > 0) {
+        channel.sendMessage("今日は" + nameList.toString() + "の誕生日なんだ！お祝いしてくれると嬉しいな。").queue();
+        }
+      }
+        prevDay = date; 
+        }// 前回の実行日を更新
         Thread.sleep(1000 * 60); // 1分ごとに実行
       } catch (InterruptedException e) {
         e.printStackTrace();
